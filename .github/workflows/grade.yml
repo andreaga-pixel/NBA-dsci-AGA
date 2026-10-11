@@ -1,0 +1,8 @@
+name: Grade my work
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  grade:
+    uses: Moises-dsci/BPS-Dsci/.github/workflows/autograde.yml@main
