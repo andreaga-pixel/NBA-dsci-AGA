@@ -218,3 +218,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Datos del proyecto NBA (demasiado grandes para GitHub; se descargan desde Kaggle)
+project/data/raw/
+project/data/processed/
+
+# Token de la API de Kaggle (credencial personal, nunca se sube)
+kaggle.json
