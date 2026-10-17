@@ -132,4 +132,21 @@ _Pendiente_
 
 ## Fuentes
 
-- NBA Player Participation Policy (2023): [ESPN, "NBA Board of Governors approve tougher rest rule"](https://africa.espn.com/nba/story/_/id/38392750/source-nba-board-governors-approve-tougher-rest-rule)
+## Fuentes
+
+**Datos**
+
+- Moore, E. A. *NBA Dataset: Box Scores and Stats (1947 - Today)*, versión 515. Kaggle. [https://www.kaggle.com/datasets/eoinamoore/historical-nba-data-and-player-box-scores](https://www.kaggle.com/datasets/eoinamoore/historical-nba-data-and-player-box-scores). Datos originales de NBA.com.
+- Licencia CC0 1.0 (dominio público): [https://creativecommons.org/publicdomain/zero/1.0/](https://creativecommons.org/publicdomain/zero/1.0/)
+
+**Normativa de la NBA sobre descansos**
+
+- ESPN. *NBA Board of Governors approve tougher rest rule* (2023): [enlace](https://africa.espn.com/nba/story/_/id/38392750/source-nba-board-governors-approve-tougher-rest-rule)
+
+- NBC Sports. *NBA owners approve stricter rules for resting multiple star players* (2023): [enlace](https://www.nbcsports.com/nba/news/nba-owners-approve-stricter-rules-for-resting-multiple-star-players-what-will-that-mean)
+
+- Eurohoops. *NBPA slams Bucks over Giannis shutdown for 2025-26 NBA season*: [enlace](https://www.eurohoops.net/en/nba-news/1947670/giannis-antetokounmpo-update-nbpa-milwaukee-bucks-nba/amp/). Muestra que la normativa sigue aplicándose en la temporada 2025-26.
+
+**Análisis propio**
+
+- Exploración del dataset: [`notebooks/01-exploracion-datasetNBA.ipynb`](notebooks/01-exploracion-datasetNBA.ipynb)
