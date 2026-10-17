@@ -29,19 +29,25 @@ El análisis completo está en [`notebooks/01-exploracion-datasetNBA.ipynb`](not
 - **Nulos estructurales** Vs **nulos reales**. El 10% de las filas no tienen minutos, pero el 89% de esos casos el jugador no jugó, lo sé porque tiene un comentario de ausencia. Los nulos realesson el 3,7% de mi ventana. El 59% de ellos son de pretemporada (que voy a excluir) y el resto tiene todas las estadísticas a 0 y se tratará como "no jugó, motivo no registrado".
 - **Texto sin normalizar** `comment`tiene 7.891 variantes y `gameType` escribe el mismo tipo de  partido de varias formas (por ejemplo,``Preseason` y `Pre Season`).
 
-**Limitaciones**(no se puede corregir)
+**Limitaciones** (no se puede corregir)
 
 - **No hay datos físicos**. Sin GPS, frecuencia cardiaca ni distacia recorrida, la carga se aproxima solo con minutos y calendario. 
 - **El descanso no se registra de forma fiable**. Solo 418 ausencias se etiquetan como descanso. La mayoría quedan ocultas en "Coach's Decision" (120.262 casos), que no distigue descanso de decisión técnica. Además, la eyiqueta "Rest" cae a partir de 2018, coincidiendo con la normativa de la NBA contra el descanso de estrellas: **como se registra el dato depende de las reglas de la liga**.
 - **Sesgo de selección**. Los entreadores ya descansan a quien ven cansado, así que los datos muestran a los jugadores que *ya* se gestionaron. La relación entre carga y rendimiento será una asociación, no una causa. 
 
-**Efecto en mi decisión:**la herramienta ofrecerá recomendaciones de apoyo, no ordenes. El responsable de rendimiento debe combinarlas con la información médica y física que el club sí tiene y el dataset no. 
+**Efecto en mi decisión:** la herramienta ofrecerá recomendaciones de apoyo, no ordenes. El responsable de rendimiento debe combinarlas con la información médica y física que el club sí tiene y el dataset no. 
 
 ## 2. El problema de negocio
 
 ### 2.1 Organización, departamento y stakeholder
 
-_Pendiente_
+**Organización:** *AGA Analytics* (inventado) es una consultora de analítica deportiva que ofrece a los clubes de NBA una herramienta de gestión de carga de jugadores, construida con datos públicos de la liga. El proyecto se presenta con un club piloto, los **Celtics**, pero el sistema es aplicable a cualquier equipo cambiando un filtro. 
+
+**Departamento:** El área de rendimiento y ciencia del deporte del club: un equipo reducido como por ejemplo; preparador físico, fisioterapeuta, nutricionista y un analista de datos. Estos se van a encargar de que los jugadores lleguen en buen estado a los partidos y de reducir el riesgo de lesión durante una temporada de 82 partidos en unos cinco meses y medio. 
+
+**Srakeholder:** El respondable de rendimiento. Consulta la herramienta la víspera y la mañana de cada partido. Puede proponer que un jugador descanse, juegue con un límite de minutos o reduzca la carga en el entrenamiento. La decision final es siempre del entrenador, así que la herramienta debe dar argumentos claros que el responsable pueda defeder ante él. 
+
+
 
 ### 2.2 La decisión que apoya
 
