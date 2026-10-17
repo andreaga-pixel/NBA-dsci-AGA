@@ -160,8 +160,15 @@ Un dashboard solo mostraría datos y dejaría la interpretación al usuario, el 
 
 ### 3.2 Arquitectura
 
-_Pendiente_
-
+```mermaid
+flowchart LR
+    A[Fuente<br/>Kaggle, CSV<br/>actualización diaria] --> B[Ingesta<br/>script de descarga,<br/>pandas]
+    B --> C[Limpieza y calidad<br/>tipos, nulos,<br/>minutos mm:ss, texto]
+    C --> D[Modelo de datos<br/>hechos jugador-partido<br/>+ dimensiones, parquet]
+    D --> E[Analítica / motor<br/>carga, semáforo,<br/>modelo]
+    E --> F[Dashboard<br/>Power BI o<br/>plotly / Streamlit]
+    F --> G((Responsable de<br/>rendimiento:<br/>decisión))
+```
 ## Fuentes
 
 **Datos**
