@@ -47,11 +47,31 @@ El análisis completo está en [`notebooks/01-exploracion-datasetNBA.ipynb`](not
 
 **Srakeholder:** El respondable de rendimiento. Consulta la herramienta la víspera y la mañana de cada partido. Puede proponer que un jugador descanse, juegue con un límite de minutos o reduzca la carga en el entrenamiento. La decision final es siempre del entrenador, así que la herramienta debe dar argumentos claros que el responsable pueda defeder ante él. 
 
-
-
 ### 2.2 La decisión que apoya
 
-_Pendiente_
+**Decisión.** Con esta herramienta, el responsable de rendimiento decidirá, antes de cada partido, **qué jugadores juegan con normalidad, con un límite de minutos o descansan**, equilibrando las opciones de ganar ese partido con el desgaste acumulado de cada jugador.
+
+**Por qué importa al club.** El objetivo estratégico de los Celtics no es ganar cada partido de temporada regular, sino llegar a los playoffs con la plantilla sana. Ahí están los ingresos y el prestigio. Cada partido perdido por un descanso cuesta poco; una lesión de un titular en marzo puede costar la temporada.
+
+**Restricciones.**
+
+- **Normativa de la NBA.** La *Player Participation Policy* (2023) impide descansar a más de una estrella en el mismo partido y obliga a que las estrellas jueguen los partidos televisados a nivel nacional, con multas si no se cumple. Además, los jugadores necesitan 65 partidos para optar a premios individuales.
+
+- **Datos disponibles.** Solo datos públicos: minutos, calendario y estadísticas. No hay datos médicos ni físicos (GPS, frecuencia cardiaca), que el club sí tiene pero no forman parte de este proyecto.
+
+- **Tiempo.** La recomendación tiene que estar lista la víspera del partido, a tiempo para planificar el entrenamiento y hablar con el entrenador.
+
+- **Quién decide.** La herramienta recomienda; la decisión final es del entrenador.
+
+**Alternativas sin esta herramienta.**
+
+- **El criterio del cuerpo técnico:** rápido y con información que los datos no tienen, pero subjetivo y difícil de justificar.
+
+- **Reglas fijas** (por ejemplo, descansar a todos los veteranos en los back-to-backs): simples, pero ignoran el rival y el momento de la temporada.
+
+- **Sensores y GPS:** más precisos, pero caros y privados. Mi herramienta los complementa, no los sustituye.
+
+**A quién más afecta.** A los **jugadores**, cuyos minutos influyen en sus estadísticas, contratos y opciones de premios; a la **afición y las televisiones**, que pagan por ver a las estrellas; y a la **liga**, que sanciona los descansos que perjudican al espectáculo.
 
 ### 2.3 Hipótesis
 
@@ -73,4 +93,4 @@ _Pendiente_
 
 ## Fuentes
 
-_Pendiente_
+- NBA Player Participation Policy (2023): [ESPN, "NBA Board of Governors approve tougher rest rule"](https://africa.espn.com/nba/story/_/id/38392750/source-nba-board-governors-approve-tougher-rest-rule)
