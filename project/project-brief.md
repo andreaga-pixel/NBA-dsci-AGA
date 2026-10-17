@@ -75,7 +75,46 @@ El análisis completo está en [`notebooks/01-exploracion-datasetNBA.ipynb`](not
 
 ### 2.3 Hipótesis
 
-_Pendiente_
+Despues de explorar el dataset la hipótesis del principio que era sobre back-to-backs, carga semanal y rival débil. Ahora al ver que `comment` contiene lesiones, me permite dar un giro a mi hipotesis hacia **¿la carga acumulada aumenta el riesgo de lesión?**. Que es un dato super importante para un responsable de rendimiento. 
+
+Voy a ordenar las diferentes hipótesis por valor que tienen para la decisión.
+
+**H1 - La carga acumulada aumenta el riesgo de lesión** *(prioridad alta)*
+
+| | |
+|---|---|
+| **Enunciado** | Los jugadores con una carga alta en los 14 días previos tienen más probabilidad de perderse partidos por lesión en las dos semanas siguientes. |
+| **Métrica** | % de jugador-partidos seguidos de una ausencia por lesión (`comment` con DND/DNP + *Injury*, *Sprain*, *Sore*…), según la carga de los 14 días previos (minutos acumulados). |
+| **Dirección esperada** | El % de lesión es mayor en el tramo de carga más alto (por ejemplo, el 20 % superior de cada jugador) que en el resto. |
+| **Cómo la pruebo** | Variable de ventana móvil de minutos (lección 05), tasa de lesión por tramos de carga y gráfico de barras (lección 04). |
+| **Si se cumple** | La herramienta marca en rojo a los jugadores en el tramo alto y propone un límite de minutos antes de que llegue la lesión. |
+| **Si no se cumple** | La carga en minutos no basta para anticipar lesiones; el club debe apoyarse en sus datos físicos y la herramienta se centra en el rendimiento. |
+
+**H2 - El rendimiento cae en el segundo partido de un back-to-back, y mas en los veteranos** *(prioridad media)*
+
+| | |
+|---|---|
+| **Enunciado** | En el segundo de dos partidos en días consecutivos, la eficiencia en el tiro baja, sobre todo en jugadores mayores de 30 años. |
+| **Métrica** | *True Shooting %* = puntos / (2 × (tiros de campo intentados + 0,44 × tiros libres intentados)), comparando al **mismo jugador** con 0 días de descanso frente a 2 o más. |
+| **Dirección esperada** | Menor TS% con 0 días de descanso; diferencia mayor en los mayores de 30. |
+| **Cómo la pruebo** | Variable de días de descanso (lección 05), boxplot por descanso y grupo de edad, y diferencia de medias (lección 04). |
+| **Si se cumple** | Límite de minutos o descanso para los veteranos en el segundo partido de cada back-to-back. |
+| **Si no se cumple** | Los back-to-backs no justifican descansos por sí solos; se descansa según la carga acumulada (H1). |
+
+**H3 - Descansar a un titular cuesta poco contra rivales débiles** *(prioridad media)*
+
+| | |
+|---|---|
+| **Enunciado** | La ausencia de un titular habitual reduce poco las victorias contra rivales de balance negativo, pero mucho contra los fuertes. |
+| **Métrica** | % de victorias según el nivel del rival (balance de victorias, de `TeamStatistics`) y si falta o no un titular habitual. |
+| **Dirección esperada** | Diferencia pequeña contra rivales débiles y grande contra rivales fuertes. |
+| **Cómo la pruebo** | Tabla cruzada de % de victorias por nivel del rival y ausencia de titular (lecciones 03–04). |
+| **Si se cumple** | Programar los descansos contra rivales débiles, respetando la normativa de la liga. |
+| **Si no se cumple** | El rival no importa: los descansos se reparten según la carga, no según el calendario. |
+
+**¿Por qué en este orden?** **H1** es la más valiosa porque una lesión de un titular puede costar la temporada y anticiparla es el objetivo principal del departamento. **H3** y **H2** ayudan a decidir *cuando* y *como* descansar, pero solo importan si desacansar evita algo: por eso dependen directamente de **H1**.
+
+
 
 ### 2.4 KPIs
 
