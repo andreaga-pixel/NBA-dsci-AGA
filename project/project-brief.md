@@ -169,6 +169,26 @@ flowchart LR
     E --> F[Dashboard<br/>Power BI o<br/>plotly / Streamlit]
     F --> G((Responsable de<br/>rendimiento:<br/>decisión))
 ```
+| Capa | Qué hace en mi proyecto | Herramienta | Actualización |
+|---|---|---|---|
+| Fuente | Box scores de la NBA publicados en Kaggle | Kaggle (CSV) | Diaria durante la temporada |
+| Ingesta | Descarga los 4 CSV necesarios a `data/raw/` sin modificarlos | Script de Python + API de Kaggle | Diaria, la mañana siguiente a cada jornada |
+| Limpieza y calidad | Convierte minutos y fechas, unifica `gameType` y `comment`, filtra partidos oficiales desde 2015-16 | pandas (notebook de limpieza) | Tras cada ingesta |
+| Modelo de datos | Tabla de hechos jugador-partido y dimensiones de jugador, equipo y fecha | Parquet en `data/processed/` | Tras cada limpieza |
+| Analítica / motor | Calcula carga, descansos, semáforo y más adelante el modelo de riesgo | pandas, scikit-learn | Diaria |
+| Dashboard | Semáforo de la plantilla, KPIs y detalle por jugador | Power BI o Streamlit | Diaria |
+
+**Actualización y responsable.** Durante la temporada, el analista de datos del departamento ejecuta la cadena cada mañana después de una jornada, para que la recomendación esté lista la víspera del siguiente partido.
+
+**Si la fuente cambia de formato.** La ingesta comprobará que existen las columnas y los tipos esperados antes de continuar. Si algo cambia, el proceso se detiene y avisa, en lugar de generar recomendaciones con datos erróneos.
+
+**Dónde vive cada cosa.** El código (scripts y notebooks) y este documento están en mi repositorio de GitHub. Los datos están en local, en `data/raw/` y `data/processed/`, excluidos de Git por su tamaño (1,8 GB) y porque se pueden volver a descargar.
+
+**Riesgos principales.**
+
+1. **El dataset depende de una sola persona.** Si el autor deja de actualizarlo, la herramienta se queda sin datos. Alternativa: obtenerlos directamente de NBA.com, la fuente original.
+2. **Errores al clasificar `comment`.** Con 7.891 variantes de texto, una mala clasificación de las lesiones afectaría directamente a la hipótesis H1 y al modelo.
+3. **Información de salud.** Aunque los datos son públicos, deducir lesiones de personas identificables es información sensible: en la lección 03 vimos que los datos de salud son una categoría especial en el RGPD. La herramienta debe usarse solo para el cuidado de los jugadores dentro del club, no publicarse ni utilizarse, por ejemplo, en negociaciones de contratos.
 ## Fuentes
 
 **Datos**
