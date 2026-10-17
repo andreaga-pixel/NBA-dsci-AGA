@@ -114,8 +114,6 @@ Voy a ordenar las diferentes hipótesis por valor que tienen para la decisión.
 
 **¿Por qué en este orden?** **H1** es la más valiosa porque una lesión de un titular puede costar la temporada y anticiparla es el objetivo principal del departamento. **H3** y **H2** ayudan a decidir *cuando* y *como* descansar, pero solo importan si desacansar evita algo: por eso dependen directamente de **H1**.
 
-
-
 ### 2.4 KPIs
 
 | KPI | Definición y fórmula | Grano | Comparar por | Objetivo | Hipótesis | 
@@ -144,20 +142,25 @@ Cada jugador se compara **consigo mismo** y no con el resto de la plantilla. Una
 
 Al pulsar sobre un jugador, el usuario ve el detalle: los minutos de cada partido reciente, los días de descanso y si viene de un back-to-back. Así puede justificar la recomendación ante el entrenador con datos concretos. Los cortes del 60 % y el 80 % son una propuesta inicicial que puede que cambien según el análisis avance. 
 
-
-
-
 ## 3. La solución
 
 ### 3.1 Tipo de solución
 
-_Pendiente_
+**Tipo: motor analítico**, con un dashboard como capa de presentación. 
+
+- **Inputs:** box scores de cada jugador y partidos, calendario de partidos, balance de victorias de cada equipoy fecha de nacimiento de los jugadores. Todo viene del dataset descrito al incio del brief. 
+
+- **Lógica:** para cada jugador y partido se calculan la carga de los últimos 14 días, los días de descanso y si es un back-to-back. Ahora mismo esta lógica son reglas (definidas cuando he explicado lo del semáforo). 
+
+- **Output:** la vispera de cada partido, una lista de la plantilla de los Boston Celtics con el semáforo de cada jugador, una recomendación (jugar normal, limitar minutos o descansar) y el nivel del próximo rival. 
+
+**Razonamiento de la elección** 
+Un dashboard solo mostraría datos y dejaría la interpretación al usuario, el responsable de rendimiento necesita una recomendación que pueda defender ante el entrenador. Una herramienta de decisión con simulaciones (*"¿qué pasa si descanso a este jugador hoy?"*) sería el siguiente paso, pero hantes tenemos que hacer validaciones.
+
 
 ### 3.2 Arquitectura
 
 _Pendiente_
-
-## Fuentes
 
 ## Fuentes
 
