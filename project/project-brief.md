@@ -86,7 +86,7 @@ Voy a ordenar las diferentes hipótesis por valor que tienen para la decisión.
 | **Enunciado** | Los jugadores con una carga alta en los 14 días previos tienen más probabilidad de perderse partidos por lesión en las dos semanas siguientes. |
 | **Métrica** | % de jugador-partidos seguidos de una ausencia por lesión (`comment` con DND/DNP + *Injury*, *Sprain*, *Sore*…), según la carga de los 14 días previos (minutos acumulados). |
 | **Dirección esperada** | El % de lesión es mayor en el tramo de carga más alto (por ejemplo, el 20 % superior de cada jugador) que en el resto. |
-| **Cómo la pruebo** | Variable de ventana móvil de minutos (lección 05), tasa de lesión por tramos de carga y gráfico de barras (lección 04). |
+| **Cómo la pruebo** | Variable de ventana móvil de minutos (lección 05), tasa de lesión por tramos de carga y gráfico de barras. |
 | **Si se cumple** | La herramienta marca en rojo a los jugadores en el tramo alto y propone un límite de minutos antes de que llegue la lesión. |
 | **Si no se cumple** | La carga en minutos no basta para anticipar lesiones; el club debe apoyarse en sus datos físicos y la herramienta se centra en el rendimiento. |
 
@@ -97,7 +97,7 @@ Voy a ordenar las diferentes hipótesis por valor que tienen para la decisión.
 | **Enunciado** | En el segundo de dos partidos en días consecutivos, la eficiencia en el tiro baja, sobre todo en jugadores mayores de 30 años. |
 | **Métrica** | *True Shooting %* = puntos / (2 × (tiros de campo intentados + 0,44 × tiros libres intentados)), comparando al **mismo jugador** con 0 días de descanso frente a 2 o más. |
 | **Dirección esperada** | Menor TS% con 0 días de descanso; diferencia mayor en los mayores de 30. |
-| **Cómo la pruebo** | Variable de días de descanso (lección 05), boxplot por descanso y grupo de edad, y diferencia de medias (lección 04). |
+| **Cómo la pruebo** | Variable de días de descanso (lección 05), boxplot por descanso y grupo de edad, y diferencia de medias. |
 | **Si se cumple** | Límite de minutos o descanso para los veteranos en el segundo partido de cada back-to-back. |
 | **Si no se cumple** | Los back-to-backs no justifican descansos por sí solos; se descansa según la carga acumulada (H1). |
 
@@ -108,7 +108,7 @@ Voy a ordenar las diferentes hipótesis por valor que tienen para la decisión.
 | **Enunciado** | La ausencia de un titular habitual reduce poco las victorias contra rivales de balance negativo, pero mucho contra los fuertes. |
 | **Métrica** | % de victorias según el nivel del rival (balance de victorias, de `TeamStatistics`) y si falta o no un titular habitual. |
 | **Dirección esperada** | Diferencia pequeña contra rivales débiles y grande contra rivales fuertes. |
-| **Cómo la pruebo** | Tabla cruzada de % de victorias por nivel del rival y ausencia de titular (lecciones 03–04). |
+| **Cómo la pruebo** | Tabla cruzada de % de victorias por nivel del rival y ausencia de titular. |
 | **Si se cumple** | Programar los descansos contra rivales débiles, respetando la normativa de la liga. |
 | **Si no se cumple** | El rival no importa: los descansos se reparten según la carga, no según el calendario. |
 
@@ -118,7 +118,34 @@ Voy a ordenar las diferentes hipótesis por valor que tienen para la decisión.
 
 ### 2.4 KPIs
 
-_Pendiente_
+| KPI | Definición y fórmula | Grano | Comparar por | Objetivo | Hipótesis | 
+|---|---|---|---|---|---|
+| **Carga 14 días** | Minutos jugados por el jugador en los 14 días previos al partido | Jugador x partido | Jugador, edad, posición | Sémaforo: rojo si supero el 80% de su propio máximo habitual | **H1** |
+| **Ausencias por lesión** | Nº de partidos perdidos por lesión (`comment` categorizado como lesión) | Jugador x mes | Tramo de carga, edad | Reducirlas respecto a la temporada anterior | **H1** |
+| **Disponibilidad de titulares** | Partidos jugados por los 5 jugadores con más minutos / partidos disputados por el equipo × 100 | Equipo × temporada (acumulado) | Jugador | ≥ 85 %; y cada estrella ≥ 65 partidos (requisito de la NBA para optar a premios) | H1, H3 |
+| **Eficiencia tras back-to-back** | Diferencia de *True Shooting %* del jugador entre partidos con 0 días de descanso y con 2 o más | Jugador × temporada | Edad (menores / mayores de 30) | Seguimiento, sin objetivo fijo | H2 |
+| **Porcentaje de victorias según rival** | Victorias / partidos × 100, separando si juega o no un titular habitual | Equipo × temporada | Nivel del rival (balance de victorias) | Que la ausencia de un titular no reduzca más de 10 puntos el % de victorias contra rivales débiles | H3 |
+
+**Conflicto entre KPIs.** Los indicadores tiran hacia direcciones opuestas, y destionar esto es decisión del responsable de rendimiento: 
+
+- **Bajar la carga** (descansar más) mejora las *ausencias por lesión*, pero puede **bajar el % de victorias** a corto plazo.
+- **Descansar más** también reduce la *disponibilidad*, y la normativa exige que las estrellas jueguen al menos 65 partidos y estén en los partidos televisados. **No se puede descansar sin límite.**
+
+El objetivo no es maximizar un KPI, sino **mantener la carga controlada sin bajar de la disponibilidad mínima** y concentrar los descansos donde menos cuestan (**H3**).
+
+**¿Cómo voy a presentar la carga?** Cuando en el KPI1 hablo de un semáforo es porque así es como voy a presentar la carga visualmente de cada jugador. 
+El responsable de rendimiento consulta la herramienta la víspera de cada partido y tiene que revisar a toda la plantilla en pocos minutos. Por eso el KPI de carga no se muestra solo como un número, sino como un **semáforo** junto al nombre de cada jugador:
+
+- **Verde:** la carga de los últimos 14 días está por debajo del 60% de su propio historial. El jugador está en un nivel normal para él y puede jugar sin restricciones.
+- **Ámbar:** la carga está entre su 60% y 80%. Está más cargado de lo habitual: conviene vigilarlo y, si es posible, reducir su carga en el entrenamiento.
+- **Rojo:** la carga supera su 80%, es decir, está en uno de sus periodos más intensos de la temporada. La herramienta propone al entrenador un límite de minutos o un descanso.
+
+Cada jugador se compara **consigo mismo** y no con el resto de la plantilla. Una estrella que siempre juega 35 minutos estaría permanentemente en rojo si se usara un umbral común, y un suplente nunca lo estaría. Con el historial propio, el rojo significa "más cargado de lo que es normal para este jugador", que es lo que de verdad indica riesgo.
+
+Al pulsar sobre un jugador, el usuario ve el detalle: los minutos de cada partido reciente, los días de descanso y si viene de un back-to-back. Así puede justificar la recomendación ante el entrenador con datos concretos. Los cortes del 60 % y el 80 % son una propuesta inicicial que puede que cambien según el análisis avance. 
+
+
+
 
 ## 3. La solución
 
