@@ -25,9 +25,9 @@ El análisis completo está en [`notebooks/01-exploracion-datasetNBA.ipynb`](not
 
 **Problemas de calidad** (se corrigen en la limpieza)
 
-- Los **minutos están en dos formatos** `numMinutes`, la variable principal de carga, se lee como texto porque 2.097 filas usan `mm:ss` en lugar de un número decimal. Los tendré que convertir en minutos decimales, sin eliminar las filas. 
-- **Nulos estructurales** Vs **nulos reales**. El 10% de las filas no tienen minutos, pero el 89% de esos casos el jugador no jugó, lo sé porque tiene un comentario de ausencia. Los nulos realesson el 3,7% de mi ventana. El 59% de ellos son de pretemporada (que voy a excluir) y el resto tiene todas las estadísticas a 0 y se tratará como "no jugó, motivo no registrado".
-- **Texto sin normalizar** `comment`tiene 7.891 variantes y `gameType` escribe el mismo tipo de  partido de varias formas (por ejemplo,``Preseason` y `Pre Season`).
+- Los **minutos están en dos formatos** `numMinutes`, la variable principal de carga, se lee como texto porque 2.097 filas usan `mm:ss` en lugar de un número decimal. Los tendré que convertir a minutos decimales, sin eliminar las filas. 
+- **Nulos estructurales** Vs **nulos reales**. El 10% de las filas no tienen minutos, pero el 89% de esos casos el jugador no jugó, lo sé porque tiene un comentario de ausencia. Los nulos reales son el 3,7% de mi ventana. El 59% de ellos son de pretemporada (que voy a excluir) y el resto tiene todas las estadísticas a 0 y se tratará como "no jugó, motivo no registrado".
+- **Texto sin normalizar** `comment` tiene 7.891 variantes y `gameType` escribe el mismo tipo de  partido de varias formas (por ejemplo,``Preseason` y `Pre Season`).
 
 **Limitaciones** (no se puede corregir)
 
@@ -45,37 +45,30 @@ El análisis completo está en [`notebooks/01-exploracion-datasetNBA.ipynb`](not
 
 **Departamento:** El área de rendimiento y ciencia del deporte del club: un equipo reducido como por ejemplo; preparador físico, fisioterapeuta, nutricionista y un analista de datos. Estos se van a encargar de que los jugadores lleguen en buen estado a los partidos y de reducir el riesgo de lesión durante una temporada de 82 partidos en unos cinco meses y medio. 
 
-**Srakeholder:** El respondable de rendimiento. Consulta la herramienta la víspera y la mañana de cada partido. Puede proponer que un jugador descanse, juegue con un límite de minutos o reduzca la carga en el entrenamiento. La decision final es siempre del entrenador, así que la herramienta debe dar argumentos claros que el responsable pueda defeder ante él. 
+**Stakeholder:** El respondable de rendimiento. Consulta la herramienta la víspera y la mañana de cada partido. Puede proponer que un jugador descanse, juegue con un límite de minutos o reduzca la carga en el entrenamiento. La decision final es siempre del entrenador, así que la herramienta debe dar argumentos claros que el responsable pueda defeder ante él. 
 
 ### 2.2 La decisión que apoya
 
 **Decisión.** Con esta herramienta, el responsable de rendimiento decidirá, antes de cada partido, **qué jugadores juegan con normalidad, con un límite de minutos o descansan**, equilibrando las opciones de ganar ese partido con el desgaste acumulado de cada jugador.
 
-**Por qué importa al club.** El objetivo estratégico de los Celtics no es ganar cada partido de temporada regular, sino llegar a los playoffs con la plantilla sana. Ahí están los ingresos y el prestigio. Cada partido perdido por un descanso cuesta poco; una lesión de un titular en marzo puede costar la temporada.
+**Por qué importa al club.** El objetivo estratégico de los Celtics no es ganar cada partido de temporada regular, sino llegar a los playoffs con la plantilla sana. Ahí están los ingresos y el prestigio para el club. Cada partido perdido por un descanso cuesta poco; una lesión de un titular en marzo puede costar la temporada.
 
 **Restricciones.**
 
 - **Normativa de la NBA.** La *Player Participation Policy* (2023) impide descansar a más de una estrella en el mismo partido y obliga a que las estrellas jueguen los partidos televisados a nivel nacional, con multas si no se cumple. Además, los jugadores necesitan 65 partidos para optar a premios individuales.
-
 - **Datos disponibles.** Solo datos públicos: minutos, calendario y estadísticas. No hay datos médicos ni físicos (GPS, frecuencia cardiaca), que el club sí tiene pero no forman parte de este proyecto.
-
 - **Tiempo.** La recomendación tiene que estar lista la víspera del partido, a tiempo para planificar el entrenamiento y hablar con el entrenador.
-
 - **Quién decide.** La herramienta recomienda; la decisión final es del entrenador.
 
 **Alternativas sin esta herramienta.**
 
 - **El criterio del cuerpo técnico:** rápido y con información que los datos no tienen, pero subjetivo y difícil de justificar.
-
 - **Reglas fijas** (por ejemplo, descansar a todos los veteranos en los back-to-backs): simples, pero ignoran el rival y el momento de la temporada.
-
 - **Sensores y GPS:** más precisos, pero caros y privados. Mi herramienta los complementa, no los sustituye.
 
-**A quién más afecta.** A los **jugadores**, cuyos minutos influyen en sus estadísticas, contratos y opciones de premios; a la **afición y las televisiones**, que pagan por ver a las estrellas; y a la **liga**, que sanciona los descansos que perjudican al espectáculo.
+**A quién más afecta.** A los **jugadores**, cuyos minutos influyen en sus estadísticas, contratos y opciones de premios y a la **afición y las televisiones**, que pagan por ver a las estrellas; y a la **liga**, que sanciona los descansos que perjudican al espectáculo.
 
 ### 2.3 Hipótesis
-
-Despues de explorar el dataset la hipótesis del principio que era sobre back-to-backs, carga semanal y rival débil. Ahora al ver que `comment` contiene lesiones, me permite dar un giro a mi hipotesis hacia **¿la carga acumulada aumenta el riesgo de lesión?**. Que es un dato super importante para un responsable de rendimiento. 
 
 Voy a ordenar las diferentes hipótesis por valor que tienen para la decisión.
 
@@ -86,7 +79,7 @@ Voy a ordenar las diferentes hipótesis por valor que tienen para la decisión.
 | **Enunciado** | Los jugadores con una carga alta en los 14 días previos tienen más probabilidad de perderse partidos por lesión en las dos semanas siguientes. |
 | **Métrica** | % de jugador-partidos seguidos de una ausencia por lesión (`comment` con DND/DNP + *Injury*, *Sprain*, *Sore*…), según la carga de los 14 días previos (minutos acumulados). |
 | **Dirección esperada** | El % de lesión es mayor en el tramo de carga más alto (por ejemplo, el 20 % superior de cada jugador) que en el resto. |
-| **Cómo la pruebo** | Variable de ventana móvil de minutos (lección 05), tasa de lesión por tramos de carga y gráfico de barras. |
+| **Cómo la pruebo** | Variable de ventana móvil de minutos, tasa de lesión por tramos de carga y gráfico de barras. |
 | **Si se cumple** | La herramienta marca en rojo a los jugadores en el tramo alto y propone un límite de minutos antes de que llegue la lesión. |
 | **Si no se cumple** | La carga en minutos no basta para anticipar lesiones; el club debe apoyarse en sus datos físicos y la herramienta se centra en el rendimiento. |
 
@@ -112,7 +105,7 @@ Voy a ordenar las diferentes hipótesis por valor que tienen para la decisión.
 | **Si se cumple** | Programar los descansos contra rivales débiles, respetando la normativa de la liga. |
 | **Si no se cumple** | El rival no importa: los descansos se reparten según la carga, no según el calendario. |
 
-**¿Por qué en este orden?** **H1** es la más valiosa porque una lesión de un titular puede costar la temporada y anticiparla es el objetivo principal del departamento. **H3** y **H2** ayudan a decidir *cuando* y *como* descansar, pero solo importan si desacansar evita algo: por eso dependen directamente de **H1**.
+**¿Por qué en este orden?** **H1** es la más valiosa porque una lesión de un titular puede costar la temporada y anticiparla es el objetivo principal del departamento. **H2** y **H3** ayudan a decidir *cuando* y *como* descansar, pero solo importan si desacansar evita algo: por eso dependen directamente de **H1**.
 
 ### 2.4 KPIs
 
@@ -120,8 +113,8 @@ Voy a ordenar las diferentes hipótesis por valor que tienen para la decisión.
 |---|---|---|---|---|---|
 | **Carga 14 días** | Minutos jugados por el jugador en los 14 días previos al partido | Jugador x partido | Jugador, edad, posición | Sémaforo: rojo si supero el 80% de su propio máximo habitual | **H1** |
 | **Ausencias por lesión** | Nº de partidos perdidos por lesión (`comment` categorizado como lesión) | Jugador x mes | Tramo de carga, edad | Reducirlas respecto a la temporada anterior | **H1** |
-| **Disponibilidad de titulares** | Partidos jugados por los 5 jugadores con más minutos / partidos disputados por el equipo × 100 | Equipo × temporada (acumulado) | Jugador | ≥ 85 %; y cada estrella ≥ 65 partidos (requisito de la NBA para optar a premios) | H1, H3 |
-| **Eficiencia tras back-to-back** | Diferencia de *True Shooting %* del jugador entre partidos con 0 días de descanso y con 2 o más | Jugador × temporada | Edad (menores / mayores de 30) | Seguimiento, sin objetivo fijo | H2 |
+| **Disponibilidad de titulares** | Partidos jugados por los 5 jugadores con más minutos / partidos disputados por el equipo × 100 | Equipo × temporada (acumulado) | Jugador | ≥ 85 %; y cada estrella ≥ 65 partidos (requisito de la NBA para optar a premios) | **H1, H3** |
+| **Eficiencia tras back-to-back** | Diferencia de *True Shooting %* del jugador entre partidos con 0 días de descanso y con 2 o más | Jugador × temporada | Edad (menores / mayores de 30) | Seguimiento, sin objetivo fijo | **H2** |
 | **Porcentaje de victorias según rival** | Victorias / partidos × 100, separando si juega o no un titular habitual | Equipo × temporada | Nivel del rival (balance de victorias) | Que la ausencia de un titular no reduzca más de 10 puntos el % de victorias contra rivales débiles | H3 |
 
 **Conflicto entre KPIs.** Los indicadores tiran hacia direcciones opuestas, y destionar esto es decisión del responsable de rendimiento: 
@@ -146,9 +139,9 @@ Al pulsar sobre un jugador, el usuario ve el detalle: los minutos de cada partid
 
 ### 3.1 Tipo de solución
 
-**Tipo: motor analítico**, con un dashboard como capa de presentación. 
+**Tipo: motor analítico**, con un dashboard. 
 
-- **Inputs:** box scores de cada jugador y partidos, calendario de partidos, balance de victorias de cada equipoy fecha de nacimiento de los jugadores. Todo viene del dataset descrito al incio del brief. 
+- **Inputs:** box scores de cada jugador y partidos, calendario de partidos, balance de victorias de cada equipo y fecha de nacimiento de los jugadores. Todo viene del dataset descrito al incio del brief. 
 
 - **Lógica:** para cada jugador y partido se calculan la carga de los últimos 14 días, los días de descanso y si es un back-to-back. Ahora mismo esta lógica son reglas (definidas cuando he explicado lo del semáforo). 
 
@@ -189,8 +182,8 @@ flowchart LR
 1. **El dataset depende de una sola persona.** Si el autor deja de actualizarlo, la herramienta se queda sin datos. Alternativa: obtenerlos directamente de NBA.com, la fuente original.
 2. **Errores al clasificar `comment`.** Con 7.891 variantes de texto, una mala clasificación de las lesiones afectaría directamente a la hipótesis H1 y al modelo.
 3. **Información de salud.** Aunque los datos son públicos, deducir lesiones de personas identificables es información sensible: en la lección 03 vimos que los datos de salud son una categoría especial en el RGPD. La herramienta debe usarse solo para el cuidado de los jugadores dentro del club, no publicarse ni utilizarse, por ejemplo, en negociaciones de contratos.
-## Fuentes
 
+## Fuentes
 **Datos**
 
 - Moore, E. A. *NBA Dataset: Box Scores and Stats (1947 - Today)*, versión 515. Kaggle. [https://www.kaggle.com/datasets/eoinamoore/historical-nba-data-and-player-box-scores](https://www.kaggle.com/datasets/eoinamoore/historical-nba-data-and-player-box-scores). Datos originales de NBA.com.
@@ -199,9 +192,7 @@ flowchart LR
 **Normativa de la NBA sobre descansos**
 
 - ESPN. *NBA Board of Governors approve tougher rest rule* (2023): [enlace](https://africa.espn.com/nba/story/_/id/38392750/source-nba-board-governors-approve-tougher-rest-rule)
-
 - NBC Sports. *NBA owners approve stricter rules for resting multiple star players* (2023): [enlace](https://www.nbcsports.com/nba/news/nba-owners-approve-stricter-rules-for-resting-multiple-star-players-what-will-that-mean)
-
 - Eurohoops. *NBPA slams Bucks over Giannis shutdown for 2025-26 NBA season*: [enlace](https://www.eurohoops.net/en/nba-news/1947670/giannis-antetokounmpo-update-nbpa-milwaukee-bucks-nba/amp/). Muestra que la normativa sigue aplicándose en la temporada 2025-26.
 
 **Análisis propio**
