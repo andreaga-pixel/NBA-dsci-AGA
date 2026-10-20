@@ -27,7 +27,7 @@ El análisis completo está en [`notebooks/01-exploracion-datasetNBA.ipynb`](not
 
 - Los **minutos están en dos formatos** `numMinutes`, la variable principal de carga, se lee como texto porque 2.097 filas usan `mm:ss` en lugar de un número decimal. Los tendré que convertir a minutos decimales, sin eliminar las filas. 
 - **Nulos estructurales** Vs **nulos reales**. El 10% de las filas no tienen minutos, pero el 89% de esos casos el jugador no jugó, lo sé porque tiene un comentario de ausencia. Los nulos reales son el 3,7% de mi ventana. El 59% de ellos son de pretemporada (que voy a excluir) y el resto tiene todas las estadísticas a 0 y se tratará como "no jugó, motivo no registrado".
-- **Texto sin normalizar** `comment` tiene 7.891 variantes y `gameType` escribe el mismo tipo de  partido de varias formas (por ejemplo,``Preseason``y ``Pre Season`).
+- **Texto sin normalizar** `comment` tiene 7.891 variantes y `gameType` escribe el mismo tipo de  partido de varias formas (por ejemplo,``Preseason``y ``Pre Season``).
 
 **Limitaciones** (no se puede corregir)
 
