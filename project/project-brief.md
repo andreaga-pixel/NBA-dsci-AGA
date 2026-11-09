@@ -155,8 +155,22 @@ Al pulsar sobre un jugador, el usuario ve el detalle: los minutos de cada partid
 **Razonamiento de la elección** 
 Un dashboard solo mostraría datos y dejaría la interpretación al usuario, el responsable de rendimiento necesita una recomendación que pueda defender ante el entrenador. Una herramienta de decisión con simulaciones (*"¿qué pasa si descanso a este jugador hoy?"*) sería el siguiente paso, pero hantes tenemos que hacer validaciones.
 
+### 3.2 Del dato al resultado
 
-### 3.2 Arquitectura
+Cómo se convierte cada columna del dataset en las variables del análisis y en los resultados que verá el responsable de rendimiento:
+
+| Dato de origen | Variable que se calcula | Para qué | Resultado |
+|---|---|---|---|
+| `numMinutes` + `gameDate` + `personId` | Carga: minutos acumulados en los 14 días previos | KPI de carga, H1 | Semáforo por jugador antes de cada partido |
+| `comment` | Ausencia por lesión (sí / no), con tres categorías | KPI de ausencias, H1 | % de lesión según el tramo de carga |
+| `gameDate` | Días de descanso y back-to-back (0 días) | H2 | Diferencia de TS% con y sin descanso |
+| `points`, `fieldGoalsAttempted`, `freeThrowsAttempted` | *True Shooting %* | KPI de eficiencia, H2 | Caída de eficiencia en back-to-backs |
+| `birthDate` (de `Players`, unida por `personId`) | Edad en la fecha del partido | H2 | Comparación veteranos (más de 30) / jóvenes |
+| `numMinutes` + `gameId` | Partidos jugados por los titulares | KPI de disponibilidad | % de partidos disponibles por temporada |
+
+Los siguientes entregables calcularán estas variables y mostrarán los resultados reales de H1 y H2.
+
+### 3.3 Arquitectura
 
 ```mermaid
 flowchart LR
