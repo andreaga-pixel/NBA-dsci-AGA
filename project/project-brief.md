@@ -26,16 +26,16 @@ El análisis completo está en [`notebooks/01-exploracion-datasetNBA.ipynb`](not
 **Problemas de calidad** (se corrigen en la limpieza)
 
 - Los **minutos están en dos formatos** `numMinutes`, la variable principal de carga, se lee como texto porque 2.097 filas usan `mm:ss` en lugar de un número decimal. Los tendré que convertir a minutos decimales, sin eliminar las filas. 
-- **Nulos estructurales** Vs **nulos reales**. El 10% de las filas no tienen minutos, pero el 89% de esos casos el jugador no jugó, lo sé porque tiene un comentario de ausencia. Los nulos reales son el 3,7% de mi ventana. El 59% de ellos son de pretemporada (que voy a excluir) y el resto tiene todas las estadísticas a 0 y se tratará como "no jugó, motivo no registrado".
-- **Texto sin normalizar** `comment` tiene 7.891 variantes y `gameType` escribe el mismo tipo de  partido de varias formas (por ejemplo,``Preseason``y ``Pre Season``).
+- **Nulos estructurales** frente a **nulos reales**. El 10% de las filas no tienen minutos, pero el 89% de esos casos el jugador no jugó, lo sé porque tiene un comentario de ausencia. Los nulos reales son el 3,7% de mi ventana. El 59% de ellos son de pretemporada (que voy a excluir) y el resto tiene todas las estadísticas a 0 y se tratará como "no jugó, motivo no registrado".
+- **Texto sin normalizar** `comment` tiene 7.891 variantes y `gameType` escribe el mismo tipo de  partido de varias formas (por ejemplo,`Preseason` y `Pre Season`).
 
-**Limitaciones** (no se puede corregir)
+**Limitaciones** (no se pueden corregir)
 
-- **No hay datos físicos**. Sin GPS, frecuencia cardiaca ni distacia recorrida, la carga se aproxima solo con minutos y calendario. 
-- **El descanso no se registra de forma fiable**. Solo 418 ausencias se etiquetan como descanso. La mayoría quedan ocultas en "Coach's Decision" (120.262 casos), que no distigue descanso de decisión técnica. Además, la eyiqueta "Rest" cae a partir de 2018, coincidiendo con la normativa de la NBA contra el descanso de estrellas: **como se registra el dato depende de las reglas de la liga**.
-- **Sesgo de selección**. Los entreadores ya descansan a quien ven cansado, así que los datos muestran a los jugadores que *ya* se gestionaron. La relación entre carga y rendimiento será una asociación, no una causa. 
+- **No hay datos físicos**. Sin GPS, frecuencia cardiaca ni distancia recorrida, la carga se aproxima solo con minutos y calendario. 
+- **El descanso no se registra de forma fiable**. Solo 418 ausencias se etiquetan como descanso. La mayoría quedan ocultas en "Coach's Decision" (120.262 casos), que no distingue descanso de decisión técnica. Además, la etiqueta "Rest" cae a partir de 2018, coincidiendo con la normativa de la NBA contra el descanso de estrellas: **cómo se registra el dato depende de las reglas de la liga**.
+- **Sesgo de selección**. Los entrenadores ya descansan a quien ven cansado, así que los datos muestran a los jugadores que *ya* se gestionaron. La relación entre carga y rendimiento será una asociación, no una causa. 
 
-**Efecto en mi decisión:** la herramienta ofrecerá recomendaciones de apoyo, no ordenes. El responsable de rendimiento debe combinarlas con la información médica y física que el club sí tiene y el dataset no. 
+**Efecto en mi decisión:** la herramienta ofrecerá recomendaciones de apoyo, no órdenes. El responsable de rendimiento debe combinarlas con la información médica y física que el club sí tiene y el dataset no. 
 
 ## 2. El problema de negocio
 
@@ -45,7 +45,7 @@ El análisis completo está en [`notebooks/01-exploracion-datasetNBA.ipynb`](not
 
 **Departamento:** El área de rendimiento y ciencia del deporte del club: un equipo reducido como por ejemplo; preparador físico, fisioterapeuta, nutricionista y un analista de datos. Estos se van a encargar de que los jugadores lleguen en buen estado a los partidos y de reducir el riesgo de lesión durante una temporada de 82 partidos en unos cinco meses y medio. 
 
-**Stakeholder:** El respondable de rendimiento. Consulta la herramienta la víspera y la mañana de cada partido. Puede proponer que un jugador descanse, juegue con un límite de minutos o reduzca la carga en el entrenamiento. La decision final es siempre del entrenador, así que la herramienta debe dar argumentos claros que el responsable pueda defeder ante él. 
+**Stakeholder:** El responsable de rendimiento. Consulta la herramienta la víspera y la mañana de cada partido. Puede proponer que un jugador descanse, juegue con un límite de minutos o reduzca la carga en el entrenamiento. La decisión final es siempre del entrenador, así que la herramienta debe dar argumentos claros que el responsable pueda defender ante él. 
 
 ### 2.2 La decisión que apoya
 
@@ -97,7 +97,7 @@ Voy a ordenar las diferentes hipótesis por valor que tienen para la decisión.
 | **Si se cumple** | La herramienta marca en rojo a los jugadores en el tramo alto y propone un límite de minutos antes de que llegue la lesión. |
 | **Si no se cumple** | La carga en minutos no basta para anticipar lesiones; el club debe apoyarse en sus datos físicos y la herramienta se centra en el rendimiento. |
 
-**H2 - El rendimiento cae en el segundo partido de un back-to-back, y mas en los veteranos** *(prioridad media)*
+**H2 - El rendimiento cae en el segundo partido de un back-to-back, y más en los veteranos** *(prioridad media)*
 
 | | |
 |---|---|
@@ -122,7 +122,7 @@ Voy a ordenar las diferentes hipótesis por valor que tienen para la decisión.
 | **Eficiencia tras back-to-back** | Diferencia de *True Shooting %* del jugador entre partidos con 0 días de descanso y con 2 o más | Jugador × temporada | Edad (menores / mayores de 30) | Seguimiento, sin objetivo fijo | **H2** |
 
 
-**Conflicto entre KPIs.** Los indicadores tiran hacia direcciones opuestas, y destionar esto es decisión del responsable de rendimiento: 
+**Conflicto entre KPIs.** Los indicadores tiran hacia direcciones opuestas, y gestionar esto es decisión del responsable de rendimiento: 
 
 - **Bajar la carga** (descansar más) mejora las *ausencias por lesión*, pero puede **bajar el % de victorias** a corto plazo.
 - **Descansar más** también reduce la *disponibilidad*, y la normativa exige que las estrellas jueguen al menos 65 partidos y estén en los partidos televisados. **No se puede descansar sin límite.**
@@ -150,10 +150,10 @@ Al pulsar sobre un jugador, el usuario ve el detalle: los minutos de cada partid
 
 - **Lógica:** para cada jugador y partido se calculan la carga de los últimos 14 días, los días de descanso y si es un back-to-back. Ahora mismo esta lógica son reglas.((las del semáforo); en el bloque 3, un modelo de riesgo de lesión entrenado con las ausencias de `comment` servirá para validarlas.) 
 
-- **Output:** la vispera de cada partido, una lista de la plantilla de los Boston Celtics con el semáforo de cada jugador, una recomendación (jugar normal, limitar minutos o descansar). 
+- **Output:** la víspera de cada partido, una lista de la plantilla de los Boston Celtics con el semáforo de cada jugador, una recomendación (jugar normal, limitar minutos o descansar). 
 
 **Razonamiento de la elección** 
-Un dashboard solo mostraría datos y dejaría la interpretación al usuario, el responsable de rendimiento necesita una recomendación que pueda defender ante el entrenador. Una herramienta de decisión con simulaciones (*"¿qué pasa si descanso a este jugador hoy?"*) sería el siguiente paso, pero hantes tenemos que hacer validaciones.
+Un dashboard solo mostraría datos y dejaría la interpretación al usuario, el responsable de rendimiento necesita una recomendación que pueda defender ante el entrenador. Una herramienta de decisión con simulaciones (*"¿qué pasa si descanso a este jugador hoy?"*) sería el siguiente paso, pero antes tenemos que hacer validaciones.
 
 ### 3.2 Del dato al resultado
 
