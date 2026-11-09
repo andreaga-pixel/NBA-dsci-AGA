@@ -17,7 +17,7 @@
 | **Tamaño** | `PlayerStatistics.csv`: 1.669.922 filas × 40 columnas, 390 MB. Además: `Games.csv` (11 MB), `TeamStatistics.csv` (36 MB) y `Players.csv` (0,5 MB) |
 | **Columnas clave** | **Fechas:** `gameDate`. **Dimensiones:** jugador (`personId`), equipo, rival, local/visitante (`home`), tipo de partido (`gameType`), titular (`startingPosition`). **Medidas:** `numMinutes`, `points`, `plusMinusPoints`, tiros, rebotes, asistencias. **Objetivo candidato:** rendimiento en el siguiente partido, o ausencia por lesión (derivada de `comment`) |
 | **Problemas de calidad detectados** | `numMinutes` se lee como texto (2.097 filas en formato `mm:ss`). Fechas e IDs con tipos incorrectos. `comment` y `gameType` con el mismo valor escrito de varias formas (7.891 variantes en `comment`). Nulos reales de minutos: 3,7 % de mi ventana. Al 10,4 % de los jugadores recientes le falta la fecha de nacimiento (0,2 % de las filas) |
-| **Otras fuentes que uniré** | Dentro del mismo dataset: `Players.csv` (edad y posición, unida por `personId`) y `TeamStatistics.csv` (balance de victorias del rival). No necesito fuentes externas |
+| **Otras fuentes que uniré** | Dentro del mismo dataset: `Players.csv` (edad y posición, unida por `personId`). `TeamStatistics.csv` (balance del rival) queda para una ampliación. No necesito fuentes externas |
 
 ### 1.2 Calidad y limitaciones de los datos
 
@@ -41,7 +41,7 @@ El análisis completo está en [`notebooks/01-exploracion-datasetNBA.ipynb`](not
 
 ### 2.1 Organización, departamento y stakeholder
 
-**Organización:** *AGA Analytics* (inventado) es una consultora de analítica deportiva que ofrece a los clubes de NBA una herramienta de gestión de carga de jugadores, construida con datos públicos de la liga. El proyecto se presenta con un club piloto, los **Celtics**, pero el sistema es aplicable a cualquier equipo cambiando un filtro. 
+**Organización:** *AGA Analytics* (inventado) es una consultora de analítica deportiva que ofrece a los clubes de NBA una herramienta de gestión de carga de jugadores, construida con datos públicos de la liga. El proyecto se presenta con un club piloto, los **Celtics**; extenderlo a otros equipos sería una ampliación posterior.
 
 **Departamento:** El área de rendimiento y ciencia del deporte del club: un equipo reducido como por ejemplo; preparador físico, fisioterapeuta, nutricionista y un analista de datos. Estos se van a encargar de que los jugadores lleguen en buen estado a los partidos y de reducir el riesgo de lesión durante una temporada de 82 partidos en unos cinco meses y medio. 
 
@@ -68,7 +68,21 @@ El análisis completo está en [`notebooks/01-exploracion-datasetNBA.ipynb`](not
 
 **A quién más afecta.** A los **jugadores**, cuyos minutos influyen en sus estadísticas, contratos y opciones de premios y a la **afición y las televisiones**, que pagan por ver a las estrellas; y a la **liga**, que sanciona los descansos que perjudican al espectáculo.
 
-### 2.3 Hipótesis
+### 2.3 Alcance del proyecto
+
+El planteamiento completo es amplio, así que lo divido en un **núcleo** que desarrollaré durante el curso y unas **ampliaciones** que quedan fuera por ahora. Prefiero completar y validar bien una parte que dejar varias a medias.
+
+| Dentro del alcance (núcleo) | Fuera del alcance (ampliaciones) |
+|---|---|
+| Un solo equipo piloto: Boston Celtics, temporadas 2015-16 a 2025-26, partidos oficiales | Versión para cualquier equipo de la liga |
+| H1 (carga → lesiones) y H2 (back-to-back → eficiencia) | Efecto de descansar según el nivel del rival (antigua H3) |
+| `comment` clasificado en tres categorías: lesión, decisión técnica y otros | Clasificación detallada por tipo de lesión |
+| Semáforo de carga por reglas (percentiles) | Modelo predictivo de rendimiento y simulaciones "¿qué pasa si…?" |
+| 4 KPIs (sección 2.5) | KPI de victorias según el rival |
+
+El modelo de riesgo de lesión del bloque 3 sí entra, pero como validación del semáforo: comprobará si los jugadores en rojo se lesionan más que el resto.
+
+### 2.4 Hipótesis
 
 Voy a ordenar las diferentes hipótesis por valor que tienen para la decisión.
 
@@ -94,42 +108,33 @@ Voy a ordenar las diferentes hipótesis por valor que tienen para la decisión.
 | **Si se cumple** | Límite de minutos o descanso para los veteranos en el segundo partido de cada back-to-back. |
 | **Si no se cumple** | Los back-to-backs no justifican descansos por sí solos; se descansa según la carga acumulada (H1). |
 
-**H3 - Descansar a un titular cuesta poco contra rivales débiles** *(prioridad media)*
 
-| | |
-|---|---|
-| **Enunciado** | La ausencia de un titular habitual reduce poco las victorias contra rivales de balance negativo, pero mucho contra los fuertes. |
-| **Métrica** | % de victorias según el nivel del rival (balance de victorias, de `TeamStatistics`) y si falta o no un titular habitual. |
-| **Dirección esperada** | Diferencia pequeña contra rivales débiles y grande contra rivales fuertes. |
-| **Cómo la pruebo** | Tabla cruzada de % de victorias por nivel del rival y ausencia de titular. |
-| **Si se cumple** | Programar los descansos contra rivales débiles, respetando la normativa de la liga. |
-| **Si no se cumple** | El rival no importa: los descansos se reparten según la carga, no según el calendario. |
 
-**¿Por qué en este orden?** **H1** es la más valiosa porque una lesión de un titular puede costar la temporada y anticiparla es el objetivo principal del departamento. **H2** y **H3** ayudan a decidir *cuando* y *como* descansar, pero solo importan si desacansar evita algo: por eso dependen directamente de **H1**.
+**¿Por qué en este orden?** **H1** es la más valiosa porque una lesión de un titular puede costar la temporada y anticiparla es el objetivo principal del departamento. **H2** ayuda a decidir *cuándo* descansar (en los back-to-backs) y *a quién* (a los veteranos), pero solo importa si descansar evita algo: por eso depende de **H1**.
 
-### 2.4 KPIs
+### 2.5 KPIs
 
 | KPI | Definición y fórmula | Grano | Comparar por | Objetivo | Hipótesis | 
 |---|---|---|---|---|---|
-| **Carga 14 días** | Minutos jugados por el jugador en los 14 días previos al partido | Jugador x partido | Jugador, edad, posición | Sémaforo: rojo si supero el 80% de su propio máximo habitual | **H1** |
+| **Carga 14 días** | Minutos jugados por el jugador en los 14 días previos al partido | Jugador x partido | Jugador, edad, posición | Semáforo según los percentiles del propio jugador: rojo por encima del percentil 80 | **H1** |
 | **Ausencias por lesión** | Nº de partidos perdidos por lesión (`comment` categorizado como lesión) | Jugador x mes | Tramo de carga, edad | Reducirlas respecto a la temporada anterior | **H1** |
-| **Disponibilidad de titulares** | Partidos jugados por los 5 jugadores con más minutos / partidos disputados por el equipo × 100 | Equipo × temporada (acumulado) | Jugador | ≥ 85 %; y cada estrella ≥ 65 partidos (requisito de la NBA para optar a premios) | **H1, H3** |
+| **Disponibilidad de titulares** | Partidos jugados por los 5 jugadores con más minutos / partidos disputados por el equipo × 100 | Equipo × temporada (acumulado) | Jugador | ≥ 85 %; y cada estrella ≥ 65 partidos (requisito de la NBA para optar a premios) | **H1**|
 | **Eficiencia tras back-to-back** | Diferencia de *True Shooting %* del jugador entre partidos con 0 días de descanso y con 2 o más | Jugador × temporada | Edad (menores / mayores de 30) | Seguimiento, sin objetivo fijo | **H2** |
-| **Porcentaje de victorias según rival** | Victorias / partidos × 100, separando si juega o no un titular habitual | Equipo × temporada | Nivel del rival (balance de victorias) | Que la ausencia de un titular no reduzca más de 10 puntos el % de victorias contra rivales débiles | H3 |
+
 
 **Conflicto entre KPIs.** Los indicadores tiran hacia direcciones opuestas, y destionar esto es decisión del responsable de rendimiento: 
 
 - **Bajar la carga** (descansar más) mejora las *ausencias por lesión*, pero puede **bajar el % de victorias** a corto plazo.
 - **Descansar más** también reduce la *disponibilidad*, y la normativa exige que las estrellas jueguen al menos 65 partidos y estén en los partidos televisados. **No se puede descansar sin límite.**
 
-El objetivo no es maximizar un KPI, sino **mantener la carga controlada sin bajar de la disponibilidad mínima** y concentrar los descansos donde menos cuestan (**H3**).
+El objetivo no es maximizar un KPI, sino **mantener la carga controlada sin bajar de la disponibilidad mínima**, concentrando los descansos en los jugadores en rojo y en los back-to-backs de los veteranos (**H2**).
 
 **¿Cómo voy a presentar la carga?** Cuando en el KPI1 hablo de un semáforo es porque así es como voy a presentar la carga visualmente de cada jugador. 
 El responsable de rendimiento consulta la herramienta la víspera de cada partido y tiene que revisar a toda la plantilla en pocos minutos. Por eso el KPI de carga no se muestra solo como un número, sino como un **semáforo** junto al nombre de cada jugador:
 
-- **Verde:** la carga de los últimos 14 días está por debajo del 60% de su propio historial. El jugador está en un nivel normal para él y puede jugar sin restricciones.
-- **Ámbar:** la carga está entre su 60% y 80%. Está más cargado de lo habitual: conviene vigilarlo y, si es posible, reducir su carga en el entrenamiento.
-- **Rojo:** la carga supera su 80%, es decir, está en uno de sus periodos más intensos de la temporada. La herramienta propone al entrenador un límite de minutos o un descanso.
+- **Verde:** la carga de los últimos 14 días está por debajo del percentil 60 de su propio historial. El jugador está en un nivel normal para él y puede jugar sin restricciones.
+- **Ámbar:** la carga está entre su percentil 60 y su percentil 80. Está más cargado de lo habitual: conviene vigilarlo y, si es posible, reducir su carga en el entrenamiento.
+- **Rojo:** la carga supera su percentil 80, es decir, está en uno de sus periodos más intensos de la temporada. La herramienta propone al entrenador un límite de minutos o un descanso.
 
 Cada jugador se compara **consigo mismo** y no con el resto de la plantilla. Una estrella que siempre juega 35 minutos estaría permanentemente en rojo si se usara un umbral común, y un suplente nunca lo estaría. Con el historial propio, el rojo significa "más cargado de lo que es normal para este jugador", que es lo que de verdad indica riesgo.
 
@@ -141,11 +146,11 @@ Al pulsar sobre un jugador, el usuario ve el detalle: los minutos de cada partid
 
 **Tipo: motor analítico**, con un dashboard. 
 
-- **Inputs:** box scores de cada jugador y partidos, calendario de partidos, balance de victorias de cada equipo y fecha de nacimiento de los jugadores. Todo viene del dataset descrito al incio del brief. 
+- **Inputs:** box scores de cada jugador y partidos, calendario de partidos y fecha de nacimiento de los jugadores. Todo viene del dataset descrito al inicio del brief. 
 
-- **Lógica:** para cada jugador y partido se calculan la carga de los últimos 14 días, los días de descanso y si es un back-to-back. Ahora mismo esta lógica son reglas (definidas cuando he explicado lo del semáforo). 
+- **Lógica:** para cada jugador y partido se calculan la carga de los últimos 14 días, los días de descanso y si es un back-to-back. Ahora mismo esta lógica son reglas.((las del semáforo); en el bloque 3, un modelo de riesgo de lesión entrenado con las ausencias de `comment` servirá para validarlas.) 
 
-- **Output:** la vispera de cada partido, una lista de la plantilla de los Boston Celtics con el semáforo de cada jugador, una recomendación (jugar normal, limitar minutos o descansar) y el nivel del próximo rival. 
+- **Output:** la vispera de cada partido, una lista de la plantilla de los Boston Celtics con el semáforo de cada jugador, una recomendación (jugar normal, limitar minutos o descansar). 
 
 **Razonamiento de la elección** 
 Un dashboard solo mostraría datos y dejaría la interpretación al usuario, el responsable de rendimiento necesita una recomendación que pueda defender ante el entrenador. Una herramienta de decisión con simulaciones (*"¿qué pasa si descanso a este jugador hoy?"*) sería el siguiente paso, pero hantes tenemos que hacer validaciones.
