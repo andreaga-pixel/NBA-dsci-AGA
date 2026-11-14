@@ -1,0 +1,15 @@
+{
+  "features": [
+    "load_14d",
+    "minutes_last_game",
+    "days_since_last_game",
+    "back_to_back",
+    "starter_share",
+    "prior_injuries_season",
+    "is_playoffs",
+    "edad"
+  ],
+  "red_threshold": 0.7587768141429037,
+  "amber_threshold": 0.6307383109556977,
+  "note": "Rojo si el número del modelo >= red_threshold; amarillo si >= amber_threshold; verde en el resto"
+}
